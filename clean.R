@@ -22,3 +22,9 @@ leads[, lead_date := NULL]
 # apply(visitor, 2, function(x) sum(is.na(x)) == length(x))
 sum(is.na(visitor$last_session_start_datetime)) == length(visitor$last_session_start_datetime)
 visitor[, last_session_start_datetime :=  NULL]
+
+# using comparator makes no real difference in price paid 
+inner_join(visitor, transactions, by = "visitor_key") %>%
+  group_by(comparator > 0) %>%
+  summarise(mean_cost = mean(na.omit(price_bought)), count = n()) %>%
+  arrange(desc(mean_cost))
